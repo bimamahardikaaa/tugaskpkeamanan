@@ -1,12 +1,26 @@
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
 import bodyParser from 'body-parser'
+import { fileURLToPath } from 'url';
+import path from 'path'
 
 const prisma = new PrismaClient()
 const app = express()
 
 const jsonParser = bodyParser.json()
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.set('views', path.join(__dirname, 'views'))
+app.set("view engine", "ejs")
+
+app.get('/', async(req, res) => {
+  res.render('index')
+})
+
+app.get('/add', async(req, res) => {
+  res.render('add')
+})
 
 app.get('/members', async (req, res) => {
   const members = await prisma.member.findMany()
@@ -14,15 +28,11 @@ app.get('/members', async (req, res) => {
 })
 
 app.post('/members', jsonParser, async (req, res) => {
-  // const name = req.body.name
-  // const age = req.body.age
-  // const fakultas = req.body.fakultas
   let result = {}
   try{
     const post = await prisma.member.create({
       data:req.body,
     })
-    console.log(post)
     result = req.body
     res.json(result)
   }catch(error){
