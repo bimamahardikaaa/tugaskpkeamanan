@@ -1,8 +1,11 @@
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
 import bodyParser from 'body-parser'
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'
 import path from 'path'
+import NodeRSA from 'node-rsa'
+import atob from 'atob'
+import cookieParser from "cookie-parser"
 
 const prisma = new PrismaClient()
 const app = express()
@@ -13,6 +16,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'views'))
 app.set("view engine", "ejs")
+app.use(cookieParser());
+
+app.get('/keys', async(req,res) => {
+  const key = new NodeRSA({b: 512});
+  const result = {
+    "public": key.exportKey("public"),
+    "private": key.exportKey("private")
+  }
+  res.json(result)
+})
 
 app.get('/', async(req, res) => {
   res.render('index')
@@ -23,20 +36,52 @@ app.get('/add', async(req, res) => {
 })
 
 app.get('/members', async (req, res) => {
-  const members = await prisma.member.findMany()
+  const key_private = new NodeRSA(atob(req.cookies.private),'pkcs1-private');
+  let members = await prisma.member.findMany()
+  console.log(members)
+  members = members.map(item => {
+    let temp = {}
+    try {      
+      temp = {
+        "id" : item.id,
+        "name" : key_private.decrypt(item.name, "utf-8"),
+        "encrypted_name" : item.name,
+        "fakultas" : key_private.decrypt(item.fakultas, "utf-8"),
+        "encrypted_fakultas" : item.fakultas,
+        "age":item.age
+      }
+    } catch (error) {
+      temp = {
+        "id" : item.id,
+        "name" : "you dont have access",
+        "encrypted_name" : item.name,
+        "fakultas" : "you dont have access",
+        "encrypted_fakultas" : item.fakultas,
+        "age":item.age
+      }
+    }
+    return item = temp
+})
   res.json(members)
 })
 
 app.post('/members', jsonParser, async (req, res) => {
-  let result = {}
+  const key_public = new NodeRSA(atob(req.cookies.public),'pkcs8-public');
+  let result = {
+    "name": key_public.encrypt(req.body.name, "base64"),
+    "fakultas": key_public.encrypt(req.body.fakultas, "base64"),
+    "age": parseInt(req.body.age)
+  }
   try{
     const post = await prisma.member.create({
-      data:req.body,
+      data:result,
     })
-    result = req.body
+    console.log(post)
     res.json(result)
   }catch(error){
+    console.log(error)
     result = {"error": error}
+    res.json(result)
   }
 })
 
