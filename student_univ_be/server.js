@@ -38,7 +38,6 @@ app.get('/add', async(req, res) => {
 app.get('/members', async (req, res) => {
   const key_private = new NodeRSA(atob(req.cookies.private),'pkcs1-private');
   let members = await prisma.member.findMany()
-  console.log(members)
   members = members.map(item => {
     let temp = {}
     try {      
@@ -48,7 +47,9 @@ app.get('/members', async (req, res) => {
         "encrypted_name" : item.name,
         "fakultas" : key_private.decrypt(item.fakultas, "utf-8"),
         "encrypted_fakultas" : item.fakultas,
-        "age":item.age
+        "age": key_private.decrypt(item.age, "utf-8"),
+        "encrypted_age" : item.age,
+
       }
     } catch (error) {
       temp = {
@@ -57,7 +58,8 @@ app.get('/members', async (req, res) => {
         "encrypted_name" : item.name,
         "fakultas" : "you dont have access",
         "encrypted_fakultas" : item.fakultas,
-        "age":item.age
+        "age": "you dont have access",
+        "encrypted_age" : item.age,
       }
     }
     return item = temp
@@ -70,16 +72,14 @@ app.post('/members', jsonParser, async (req, res) => {
   let result = {
     "name": key_public.encrypt(req.body.name, "base64"),
     "fakultas": key_public.encrypt(req.body.fakultas, "base64"),
-    "age": parseInt(req.body.age)
+    "age": key_public.encrypt(req.body.age, "base64"),
   }
   try{
     const post = await prisma.member.create({
       data:result,
     })
-    console.log(post)
     res.json(result)
   }catch(error){
-    console.log(error)
     result = {"error": error}
     res.json(result)
   }
