@@ -4,9 +4,67 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Welcome</title>
 </head>
 <body>
-    <h1>Lorem ipsum dolor sit.</h1>
+    <div class="w-full md:block md:w-auto" id="navbar-default">
+        <ul class="flex flex-col p-4 bg-gray-50 border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <li>
+            <a href="/" class="block py-2 pr-4 pl-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Student List</a>
+          </li>
+          <li>
+            <a href="/add" class="block py-2 pr-4 pl-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white" aria-current="page">Register as student</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="m-4 md:max-w-screen-sm md:mx-auto">
+          <form id="register_form">
+            <div class="mb-6">
+              <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Nama Kamu</label>
+              <input type="text" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Antonio Yusuf" required>
+            </div>
+            <div class="mb-6">
+              <label for="fakultas" class="block mb-2 text-sm font-medium text-gray-900">Fakultas Kamu</label>
+              <input type="text" id="fakultas" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Informatika" required>
+            </div>
+            <div class="mb-6">
+                <label for="fakultas" class="block mb-2 text-sm font-medium text-gray-900">Umur Kamu</label>
+                <input type="number" id="fakultas" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="18" required>
+              </div>
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+          </form>
+      </div>
 </body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    (function($){
+        function registerForm( e ){
+            const requestBody = {
+                name: $("#name").val(),
+                fakultas: $("#fakultas").val(),
+                age: $("#age").val()
+            }
+            $.ajax({
+                url: '/members',
+                dataType: 'json',
+                type: 'post',
+                data: JSON.stringify(requestBody),
+                contentType: 'application/json; charset=utf-8',
+                success: function( data ){
+                    window.location.replace("/");
+                },
+                error: function( errorThrown ){
+                    alert( errorThrown );
+                }
+            });
+
+            e.preventDefault();
+        }
+
+        $('#register_form').submit( registerForm );
+    })(jQuery);
+</script>
 </html>
