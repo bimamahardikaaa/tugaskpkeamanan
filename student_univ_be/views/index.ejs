@@ -70,44 +70,46 @@ if(!document.cookie.includes("private") && !document.cookie.includes("public")){
             document.cookie = "private="+String(btoa(data.private));
         }
     });
+    window.location.replace("/");
+} else{
+    $(document).ready(function(){
+        $.ajax({
+            url: '/members',
+            type: 'get',
+            dataType: 'JSON',
+            success: function(response){
+                var len = response.length;
+                for(let i = 0; i < len; i++){
+                    const data = response[i]
+                    const table_row = "<tr class='whitespace-nowrap'>" +
+                        "<td class='px-6 py-4'>" + 
+                           data.id
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.name + "</div>"
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_name + "</div>"
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.fakultas + "</div>"
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_fakultas + "</div>"
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.age + "</div>"
+                        + "</td>" +
+                        "<td class='px-6 py-4'>" + 
+                            "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_age + "</div>"
+                        + "</td>" +
+                        "</tr>";
+                    $('#list-member').append(table_row);
+                }
+            }
+        });
+    });
 }
 
-$(document).ready(function(){
-    $.ajax({
-        url: '/members',
-        type: 'get',
-        dataType: 'JSON',
-        success: function(response){
-            var len = response.length;
-            for(let i = 0; i < len; i++){
-                const data = response[i]
-                const table_row = "<tr class='whitespace-nowrap'>" +
-                    "<td class='px-6 py-4'>" + 
-                       data.id
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.name + "</div>"
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_name + "</div>"
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.fakultas + "</div>"
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_fakultas + "</div>"
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.age + "</div>"
-                    + "</td>" +
-                    "<td class='px-6 py-4'>" + 
-                        "<div class='text-sm text-gray-500 truncate'>"+data.encrypted_age + "</div>"
-                    + "</td>" +
-                    "</tr>";
-                $('#list-member').append(table_row);
-            }
-        }
-    });
-});
 </script>
 </html>
