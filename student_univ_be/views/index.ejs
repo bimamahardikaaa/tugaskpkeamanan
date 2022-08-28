@@ -59,7 +59,9 @@
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script>
+// melakukan pengecekan jika browser telah memiliki cookie private atau public
 if(!document.cookie.includes("private") && !document.cookie.includes("public")){
+// jika browser tidak memiliki cookie browser akan memanggil endpoint key dari backend
     $.ajax({
         url: '/keys',
         type: 'get',
@@ -70,8 +72,10 @@ if(!document.cookie.includes("private") && !document.cookie.includes("public")){
             document.cookie = "private="+String(btoa(data.private));
         }
     });
+    // jika telah berhasi mendapat kan cookie browser akan refresh halaman
     window.location.replace("/");
 } else{
+    // meminta data anggota ke backend
     $(document).ready(function(){
         $.ajax({
             url: '/members',
@@ -79,6 +83,7 @@ if(!document.cookie.includes("private") && !document.cookie.includes("public")){
             dataType: 'JSON',
             success: function(response){
                 var len = response.length;
+                // Membuat element td berdasarkan response yang diberikan backend
                 for(let i = 0; i < len; i++){
                     const data = response[i]
                     const table_row = "<tr class='whitespace-nowrap'>" +

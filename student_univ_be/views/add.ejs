@@ -40,7 +40,9 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
+    // melakukan pengecekan jika browser telah memiliki cookie private atau public
     if(!document.cookie.includes("private") && !document.cookie.includes("public")){
+        // jika browser tidak memiliki cookie browser akan memanggil endpoint key dari backend
         $.ajax({
             url: '/keys',
             type: 'get',
@@ -55,11 +57,13 @@
 
     (function($){
         function registerForm( e ){
+            // menyusun payload yang akan disubmit
             const requestBody = {
                 name: $("#name").val(),
                 fakultas: $("#fakultas").val(),
                 age: $("#age").val()
             }
+            // memanggil endpoint /members dengan method post
             $.ajax({
                 url: '/members',
                 dataType: 'json',
@@ -67,16 +71,18 @@
                 data: JSON.stringify(requestBody),
                 contentType: 'application/json; charset=utf-8',
                 success: function( data ){
+                  // jika berhasil maka akan kembali ke halaman list
                     window.location.replace("/");
                 },
                 error: function( errorThrown ){
+                  // jika gagal maka user akan mendapat kan error message
                     console.log( errorThrown );
                 }
             });
 
             e.preventDefault();
         }
-
+        // ketika form register di submit akan memanggil registerForm function
         $('#register_form').submit( registerForm );
     })(jQuery);
 </script>
